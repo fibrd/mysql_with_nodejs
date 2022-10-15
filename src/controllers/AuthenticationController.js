@@ -4,6 +4,9 @@ const config = require('../config/config')
 const { response } = require('express')
 
 const ONE_HOUR = 60 * 60
+const ONE_DAY = 24 * ONE_HOUR
+const ONE_WEEK = 7 * ONE_DAY
+const ONE_MONTH = 30 * ONE_WEEK
 
 function jwtSignUser(user) {
 	return jwt.sign(user, config.authentication.jwtSecret, {
@@ -14,42 +17,43 @@ function jwtSignUser(user) {
 module.exports = {
 	async register(req, res) {
 		try {
-			const user = await User.create(req.body)
-			const userJson = user.toJSON()
+			await User.create(req.body)
 			res.status(201).send({
 				message: 'Klient byl zaregistrován.',
 			})
 		} catch (err) {
 			console.log(err)
-			res.status(400).send({ error: 'Při registraci došlo k chybě.' })
+			res.status(400).send({
+				message: 'Při registraci došlo k chybě.',
+				errors: err.errors?.map(({ message }) => message),
+			})
 		}
 	},
 
 	async login(req, res) {
 		try {
-			const { username, password } = req.body
 			const user = await User.findOne({
 				where: {
-					username,
+					email: req.body.email,
 				},
 			})
 
 			if (!user) {
-				return res.status(403).send({ error: 'Špatné přihlašovací údaje' })
+				return res.status(403).send({ message: 'Špatné přihlašovací údaje' })
 			}
 
 			const isPasswordValid = await user.comparePassword(
-				password,
+				req.body.password,
 				user.password
 			)
 			if (!isPasswordValid) {
-				return res.status(403).send({ error: 'Špatné přihlašovací údaje' })
+				return res.status(403).send({ message: 'Špatné přihlašovací údaje' })
 			}
 
-			const userJson = user.toJSON()
-			delete userJson.password
+			const { email, username, role } = user.toJSON()
+			const userJson = { email, username, role }
 			res.cookie('token', jwtSignUser(userJson), {
-				maxAge: 3600000,
+				maxAge: ONE_MONTH,
 				httpOnly: false,
 				secure: false,
 			})
@@ -60,7 +64,7 @@ module.exports = {
 			})
 		} catch (err) {
 			console.log(err)
-			res.status(500).send({ error: 'Nastala neznámá chyba.' })
+			res.status(500).send({ message: 'Nastala neznámá chyba.' })
 		}
 	},
 

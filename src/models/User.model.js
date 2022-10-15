@@ -20,18 +20,58 @@ module.exports = (sequelize, DataTypes) => {
 	const User = sequelize.define(
 		'User',
 		{
+			email: {
+				type: DataTypes.STRING,
+				allowNull: false,
+				unique: {
+					args: true,
+					msg: 'Uživatel se zadaným Emailem je už zaregistrovaný.',
+				},
+				validate: {
+					notEmpty: {
+						args: true,
+						msg: 'Email je povinná položka.',
+					},
+					isEmail: {
+						args: true,
+						msg: 'Email musí být v odpovídajícím tvaru.',
+					},
+				},
+			},
 			username: {
 				type: DataTypes.STRING,
 				allowNull: false,
-				unique: true,
+				validate: {
+					notEmpty: {
+						args: true,
+						msg: 'Uživatelské jméno je povinná položka.',
+					},
+					len: {
+						args: [3, 10],
+						msg: 'Uživatelské jméno musí být minimálně 3 a maximálně 10 znaků dlouhé.',
+					},
+				},
 			},
 			password: {
 				type: DataTypes.STRING,
 				allowNull: false,
+				validate: {
+					notEmpty: {
+						args: true,
+						msg: 'Heslo je povinná položka.',
+					},
+					len: {
+						args: [6, 1000],
+						msg: 'Heslo není dostatečně dlouhé.',
+					},
+				},
+			},
+			coupon: {
+				type: DataTypes.STRING,
 			},
 			role: {
 				type: DataTypes.STRING,
-				allowNull: false,
+				defaultValue: 'user',
 			},
 		},
 		{
