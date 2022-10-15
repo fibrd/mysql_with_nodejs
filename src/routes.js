@@ -9,20 +9,24 @@ module.exports = app => {
 	app.get('/api/logout', AuthenticationController.logout)
 
 	// Courses
-	app.get('/api/courses', CourseController.index)
-	app.post(
+	app.get(
 		'/api/courses',
 		AuthorizationController.validateLogin,
+		CourseController.index
+	)
+	app.post(
+		'/api/courses',
+		AuthorizationController.validateAdmin,
 		CourseController.post
 	)
 	app.put(
 		'/api/courses',
-		AuthorizationController.validateLogin,
+		AuthorizationController.validateAdmin,
 		CourseController.put
 	)
 	app.delete(
 		'/api/courses',
-		AuthorizationController.validateLogin,
+		AuthorizationController.validateAdmin,
 		CourseController.delete
 	)
 }

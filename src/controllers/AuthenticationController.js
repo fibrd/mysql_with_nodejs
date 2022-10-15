@@ -17,7 +17,8 @@ function jwtSignUser(user) {
 module.exports = {
 	async register(req, res) {
 		try {
-			await User.create(req.body)
+			const { email, username, password } = req.body
+			await User.create({ email, username, password })
 			res.status(201).send({
 				message: 'Klient byl zaregistrován.',
 			})

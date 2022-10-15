@@ -4,6 +4,15 @@ module.exports = {
 	async validateLogin(req, res, next) {
 		const token = req.cookies.token
 		if (token) {
+			next()
+		} else {
+			res.status(403).send({ message: 'Nepřihlášený uživatel' })
+		}
+	},
+
+	async validateAdmin(req, res, next) {
+		const token = req.cookies.token
+		if (token) {
 			const decoded = jwt_decode(token)
 			if (decoded.role === 'admin') {
 				next()
