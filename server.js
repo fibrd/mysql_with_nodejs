@@ -14,7 +14,7 @@ app.use(cookieParser())
 
 require('./src/routes')(app)
 
-sequelize.sync().then(result => {
+sequelize.sync().then(() => {
 	app.listen(config.app_port)
 	console.log(`Server is running at port ${config.app_port}`)
 })
