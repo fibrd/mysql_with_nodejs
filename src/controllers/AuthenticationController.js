@@ -66,6 +66,6 @@ module.exports = {
 
 	async logout(req, res) {
 		res.clearCookie('token')
-		res.status(200).send({ message: 'Klien byl odhlášen' })
+		res.status(200).send({ message: 'Klient byl odhlášen' })
 	},
 }
