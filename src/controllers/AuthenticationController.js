@@ -1,6 +1,7 @@
 const { User } = require('../models')
 const jwt = require('jsonwebtoken')
 const config = require('../config/config')
+const sendEmail = require('../utils/sendEmail')
 const { response } = require('express')
 
 const ONE_HOUR = 60 * 60
@@ -19,6 +20,7 @@ module.exports = {
 		try {
 			const { email, username, password } = req.body
 			await User.create({ email, username, password })
+			sendEmail(email, 'welcome', 'Vitejte u nas.')
 			res.status(201).send({
 				message: 'Klient byl zaregistrován.',
 			})
